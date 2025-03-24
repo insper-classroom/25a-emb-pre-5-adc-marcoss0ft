@@ -31,25 +31,26 @@ void process_task(void *p) {
 
     while (true) {
         if (xQueueReceive(xQueueData, &data, 100)) {
-            if (index < 4) {
+            if (index <= 4) {
                 buffer[index] = data;
-                sum += data;
                 index++;
                 continue;
             } else {
-                sum -= buffer[0];
                 for (int i = 0; i < 4; i++) {
                     buffer[i] = buffer[i + 1];
                 }
                 buffer[4] = data;
-                sum += data;
                 index = 0;
             }
 
+            for (int i = 0; i < 5; i++) {
+                sum += buffer[i];
+            }
             int avg = sum / 5;
             
             printf("%d\n", avg);
 
+            sum = 0;
             // deixar esse delay!
             vTaskDelay(pdMS_TO_TICKS(50));
         }
