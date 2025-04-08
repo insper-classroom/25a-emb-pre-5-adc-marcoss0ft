@@ -7,7 +7,6 @@
 #include <stdio.h>
 
 #include "data.h"
-#define WINDOW_SIZE 5
 QueueHandle_t xQueueData;
 
 // não mexer! Alimenta a fila com os dados do sinal
@@ -26,31 +25,26 @@ void data_task(void *p) {
 
 void process_task(void *p) {
     int data = 0;
-    int buffer[WINDOW_SIZE] = {0};
+    int list[5] = {0, 0, 0, 0, 0};
+    int i = 0;
     int sum = 0;
-    int count = 0;     
-    int index = 0;   
 
     while (true) {
         if (xQueueReceive(xQueueData, &data, 100)) {
-            if (count < WINDOW_SIZE) {
-                sum += data;
-                buffer[index] = data;
-                count++;
-                index = (index + 1) % WINDOW_SIZE;
-                if (count < WINDOW_SIZE) {
-                    continue;
-                }
+            // implementar filtro aqui!
+            // por enquanto, só imprime os dados recebidos
+            // printf("Data: %d\n", data);
+            if (i < 4) {
+                i++;
             } else {
-                sum = sum - buffer[index] + data;
-                buffer[index] = data;
-                index = (index + 1) % WINDOW_SIZE;
+                i = 0;
             }
-            
-            int avg = sum / WINDOW_SIZE;
-            printf("%d\n", avg);
+            list[i] = data;
+            sum = list[0] + list[1] + list[2] + list[3] + list[4];
+            sum = sum / 5;
+            printf("Media: %d\n", sum);
 
-            // Deixa esse delay!
+            // deixar esse delay!
             vTaskDelay(pdMS_TO_TICKS(50));
         }
     }
